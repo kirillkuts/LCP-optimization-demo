@@ -97,6 +97,11 @@ app.get('/:page', async (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+const serverOptions = {
+  key: fs.readFileSync(path.join(__dirname, '..', 'certs', 'localhost-key.pem')),
+  cert: fs.readFileSync(path.join(__dirname, '..', 'certs', 'localhost-cert.pem')),
+};
+
+spdy.createServer(serverOptions, app).listen(PORT, () => {
+  console.log(`🚀 HTTP/2 server running at https://localhost:${PORT}`);
 });
