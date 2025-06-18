@@ -19,13 +19,22 @@ app.use(express.static(path.join(__dirname, 'public')));
 const headTplPath = path.join(__dirname, 'templates', `head.html`);
 const headTpl = fs.readFileSync(headTplPath, "utf8");
 
+const knownImages = new Map();
+
 // Dynamic HTML injection
 app.get('/:page', async (req, res) => {
   const file = req.params.page;
   const filePath = path.join(__dirname, 'templates', `${file}.html`);
 
  
-    res.write(headTpl);
+  const id = req.params.id;
+ 
+    const preloadImg = knownImages.get(id);
+    const head = headTpl.replace('{{ preloadImg }}', preloadImg ? `
+        <link rel="preload" as="image" fetchpriority="high" href="${preloadImg}" />
+    `.trim() : '');
+
+    res.write(head);
   
   fs.readFile(filePath, 'utf8', async (err, html) => {
     if (err) {
@@ -33,7 +42,6 @@ app.get('/:page', async (req, res) => {
       return;
     }
 
-    const id = req.params.id;
     
     const [
         productDetails,
@@ -42,6 +50,8 @@ app.get('/:page', async (req, res) => {
          getProductDetails(id),
          getProductStock(id)
     ]);
+
+    knownImages.set(id, productDetails.images[0]);
 
     let output = html.replace('{{ gallery }}', `
         <div dir="ltr" class="swiper tf-product-media-main" id="gallery-swiper-started">
