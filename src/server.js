@@ -33,13 +33,19 @@ app.get('/:page', async (req, res) => {
     let output = html.replace('{{ gallery }}', `
         <div dir="ltr" class="swiper tf-product-media-main" id="gallery-swiper-started">
             <div class="swiper-wrapper">
-                ${productDetails.images.map(img => `
+                ${productDetails.images.map((img, i) => `
                     <div class="swiper-slide" data-color="beige">
                         <a href="${img}" target="_blank" class="item" data-pswp-width="770px" data-pswp-height="1075px">
                             <img 
-                                class="tf-image-zoom lazyload" 
+                                class="tf-image-zoom ${i > 0 ? 'lazyload' : ''}" 
                                 data-zoom="${img}" 
-                                data-src="${img}" 
+                                ${
+                                    i === 0 ?
+                                        `
+                                            src="${img}" fetchpriority="high"
+                                        ` :
+                                        `data-src="${img}"`
+                                }
                                 alt="">
                         </a>
                     </div>
