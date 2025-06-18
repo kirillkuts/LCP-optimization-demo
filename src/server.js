@@ -28,7 +28,14 @@ app.get('/:page', async (req, res) => {
     }
 
     const id = req.params.id;
-    const productDetails = await getProductDetails(id);
+    
+    const [
+        productDetails,
+        productStock
+    ] = await Promise.all([
+         getProductDetails(id),
+         getProductStock(id)
+    ]);
 
     let output = html.replace('{{ gallery }}', `
         <div dir="ltr" class="swiper tf-product-media-main" id="gallery-swiper-started">
@@ -57,8 +64,6 @@ app.get('/:page', async (req, res) => {
     output = output.replace('{{ priceOld }}', `$${productDetails.priceOld}`);
     output = output.replace('{{ priceNew }}', `$${productDetails.priceNew}`);
     output = output.replace('{{ title }}', `${productDetails.title}`);
-
-    const productStock = await getProductStock(id);
 
     output = output.replace('{{ sizes }}', `
         <div class="variant-picker-values">
