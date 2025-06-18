@@ -42,7 +42,7 @@ app.get('/:page', async (req, res) => {
                                 ${
                                     i === 0 ?
                                         `
-                                            src="${img}" fetchpriority="high"
+                                            src="${img}" fetchpriority="high" onload="hidePreloader()"
                                         ` :
                                         `data-src="${img}"`
                                 }
