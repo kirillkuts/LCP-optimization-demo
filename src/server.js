@@ -16,10 +16,16 @@ app.use(staticResourceMiddleware);
 app.use(express.static(path.join(__dirname, 'public')));
 
 
+const headTplPath = path.join(__dirname, 'templates', `head.html`);
+const headTpl = fs.readFileSync(headTplPath, "utf8");
+
 // Dynamic HTML injection
 app.get('/:page', async (req, res) => {
   const file = req.params.page;
   const filePath = path.join(__dirname, 'templates', `${file}.html`);
+
+ 
+    res.write(headTpl);
   
   fs.readFile(filePath, 'utf8', async (err, html) => {
     if (err) {
